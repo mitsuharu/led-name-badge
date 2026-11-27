@@ -247,13 +247,17 @@ function restartPreview() {
   clearInterval(timer); frame = 0;
   const m = cur();
   $('previewNote').hidden = !APPROXIMATE_MODES.has(Number(m.mode));
+  // 点滅と枠アニメはモードの速さに連動させず、100 ms ごとに進める
+  // （アニメーションの遅い速度だと 1 コマが 0.8 秒あり、コマに連動させると点滅が 5 秒周期になるため）。
+  const TICK = 100, interval = frameInterval(m.mode, m.speed), start = performance.now();
   const step = () => {
-    const grid = applyBlinkAndAnts(renderFrame(m.bitmap, m.mode, frame), m, frame);
+    const elapsed = performance.now() - start;
+    frame = Math.floor(elapsed / interval);
+    const grid = applyBlinkAndAnts(renderFrame(m.bitmap, m.mode, frame), m, Math.floor(elapsed / TICK));
     drawFrame((x, y) => grid[y * BADGE_W + x]);
-    frame++;
   };
   step();
-  timer = setInterval(step, frameInterval(m.mode, m.speed));
+  timer = setInterval(step, Math.min(interval, TICK));
 }
 
 // テーマは文字やメッセージの状態とは別に保存する（state の検証に含めず、壊れても初期値に戻すだけで済むように）。
