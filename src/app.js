@@ -15,11 +15,32 @@ const defaultMsg = (text = '') => ({
   bitmap: null, // { width, px: number[] } row-major, 1 = on
 });
 
-let state = load() || { brightness: 100, messages: [defaultMsg('HELLO')] , cur: 0 };
-state.messages.forEach((m) => { if (!m.bitmap) m.bitmap = renderText(m); });
+const initialState = () => {
+  const m = defaultMsg('HELLO');
+  m.bitmap = renderText(m);
+  return { brightness: 100, messages: [m], cur: 0 };
+};
+let state = load() || initialState();
 
+// 保存された内容が壊れていても画面が動かなくならないよう、形が合わないものは初期状態に戻す。
 function load() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY)); } catch { return null; }
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (!s || !Array.isArray(s.messages) || !s.messages.length || s.messages.length > MAX_MSG) return null;
+    s.messages = s.messages.map((m) => {
+      const msg = { ...defaultMsg(''), ...m };
+      const bm = msg.bitmap;
+      const valid = bm && Number.isInteger(bm.width) && bm.width > 0 && bm.width % 8 === 0
+        && Array.isArray(bm.px) && bm.px.length === bm.width * ROWS;
+      if (!valid) msg.bitmap = renderText(msg);
+      return msg;
+    });
+    s.cur = Number.isInteger(s.cur) && s.cur >= 0 && s.cur < s.messages.length ? s.cur : 0;
+    s.brightness = [25, 50, 75, 100].includes(s.brightness) ? s.brightness : 100;
+    return s;
+  } catch {
+    return null;
+  }
 }
 function save() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {}
@@ -64,7 +85,12 @@ async function getDevice() {
   return devs.find((d) => d.collections.some((c) => c.outputReports && c.outputReports.length)) || devs[0];
 }
 
+let sending = false;
 async function send() {
+  // 書き込み中にもう一度押されると、2 回分のレポートが交互に混ざってバッジに届くため、送信を 1 つに限る。
+  if (sending) return;
+  sending = true;
+  $('send').disabled = true;
   const st = $('status');
   st.className = 'status';
   try {
@@ -87,6 +113,9 @@ async function send() {
     console.error(e);
     st.textContent = 'エラー: ' + (e && e.message ? e.message : e);
     st.className = 'status err';
+  } finally {
+    sending = false;
+    $('send').disabled = false;
   }
 }
 
