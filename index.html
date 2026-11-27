@@ -5,11 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LEDネームバッジ 書き換えツール (WebHID)</title>
 <link rel="stylesheet" href="style.css">
+<script>
+  // 描画前にテーマを決めて、読み込み時に一瞬ダークで表示されるのを防ぐ（app.js はモジュールで後から読まれるため、ここに置く）。
+  (() => {
+    let t = 'dark';
+    try { t = localStorage.getItem('ledbadge.theme'); } catch {}
+    document.documentElement.dataset.theme = ['dark', 'light', 'auto'].includes(t) ? t : 'dark';
+  })();
+</script>
 </head>
 <body>
 <header>
-  <h1>LEDネームバッジ 書き換えツール</h1>
-  <p class="sub">11×44ドット USB LEDバッジ（VID 0416 / PID 5020）をブラウザから書き換えます。</p>
+  <div>
+    <h1>LEDネームバッジ 書き換えツール</h1>
+    <p class="sub">11×44ドット USB LEDバッジ（VID 0416 / PID 5020）をブラウザから書き換えます。</p>
+  </div>
+  <label class="theme">テーマ
+    <select id="theme">
+      <option value="dark">ダーク</option>
+      <option value="light">ライト</option>
+      <option value="auto">OS に合わせる</option>
+    </select>
+  </label>
 </header>
 
 <main>
