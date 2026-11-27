@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # アクションは SHA で固定しているため、更新は Dependabot に任せる（SHA とバージョンのコメントを合わせて更新する）。
+  # 頻度は、更新の PR が溜まりすぎないよう月 1 回にする。
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
