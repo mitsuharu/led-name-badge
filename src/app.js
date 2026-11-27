@@ -3,6 +3,7 @@ import {
   VENDOR_ID, PRODUCT_ID, ROWS, BADGE_WIDTH as BADGE_W, MAX_MESSAGES as MAX_MSG,
   buildPayload as encodePayload, splitReports,
 } from './protocol.js';
+import { ANIMATION_FRAME_WIDTH, APPROXIMATE_MODES, frameInterval, renderFrame, applyBlinkAndAnts } from './preview.js';
 
 const STORE_KEY = 'ledbadge.v1';
 
@@ -207,7 +208,9 @@ function drawDots() {
     ctx.fillRect(x * DOT + 1, y * DOT + 1, DOT - 2, DOT - 2);
   }
   ctx.strokeStyle = '#4a90e2'; ctx.lineWidth = 2;
-  for (let x = BADGE_W; x < width; x += BADGE_W) { ctx.beginPath(); ctx.moveTo(x * DOT, 0); ctx.lineTo(x * DOT, dots.height); ctx.stroke(); }
+  // アニメーションは 48 列ごとのコマで切り替わるため、区切りの位置もそれに合わせる。
+  const pageW = Number(cur().mode) === 5 ? ANIMATION_FRAME_WIDTH : BADGE_W;
+  for (let x = pageW; x < width; x += pageW) { ctx.beginPath(); ctx.moveTo(x * DOT, 0); ctx.lineTo(x * DOT, dots.height); ctx.stroke(); }
 }
 let paint = null;
 function dotAt(e) {
@@ -242,44 +245,19 @@ function drawFrame(getPx) {
 }
 function restartPreview() {
   clearInterval(timer); frame = 0;
-  const m = cur(), { width, px } = m.bitmap;
-  const at = (x, y) => (x >= 0 && x < width && y >= 0 && y < ROWS ? px[y * width + x] : 0);
-  const interval = 130 - (m.speed - 1) * 15;
-  const center = Math.floor((BADGE_W - width) / 2);
+  const m = cur();
+  $('previewNote').hidden = !APPROXIMATE_MODES.has(Number(m.mode));
+  // 点滅と枠アニメはモードの速さに連動させず、100 ms ごとに進める
+  // （アニメーションの遅い速度だと 1 コマが 0.8 秒あり、コマに連動させると点滅が 5 秒周期になるため）。
+  const TICK = 100, interval = frameInterval(m.mode, m.speed), start = performance.now();
   const step = () => {
-    const blinkOff = m.blink && Math.floor(frame / 6) % 2 === 1;
-    let fn;
-    switch (Number(m.mode)) {
-      case 0: { const o = (frame % (width + BADGE_W)) - BADGE_W; fn = (x, y) => at(x + o, y); break; }
-      case 1: { const o = (frame % (width + BADGE_W)) - width; fn = (x, y) => at(x - o, y); break; }
-      case 2: case 3: {
-        // 44 列ずつのページを縦にスライドさせる
-        const pages = Math.max(1, Math.ceil(width / BADGE_W)), per = ROWS * 2 + 10;
-        const p = Math.floor(frame / per) % pages, t = frame % per;
-        const dy = t < ROWS ? ROWS - t : t < ROWS + 10 ? 0 : -(t - ROWS - 10);
-        const sgn = m.mode === 2 ? 1 : -1;
-        const off = width <= BADGE_W ? center : p * BADGE_W;
-        fn = (x, y) => at(x + (width <= BADGE_W ? -center : off), y - sgn * dy);
-        break;
-      }
-      default: {
-        const pages = Math.max(1, Math.ceil(width / BADGE_W));
-        const p = Math.floor(frame / 20) % pages;
-        fn = width <= BADGE_W ? (x, y) => at(x - center, y) : (x, y) => at(x + p * BADGE_W, y);
-      }
-    }
-    const antsOn = m.ants;
-    drawFrame((x, y) => {
-      if (antsOn && (y === 0 || y === ROWS - 1 || x === 0 || x === BADGE_W - 1)) {
-        const k = (y === 0 ? x : y === ROWS - 1 ? BADGE_W * 2 + ROWS - x : x === 0 ? BADGE_W * 2 + ROWS * 2 - y : BADGE_W + y);
-        return (k + frame) % 4 < 2;
-      }
-      return blinkOff ? 0 : fn(x, y);
-    });
-    frame++;
+    const elapsed = performance.now() - start;
+    frame = Math.floor(elapsed / interval);
+    const grid = applyBlinkAndAnts(renderFrame(m.bitmap, m.mode, frame), m, Math.floor(elapsed / TICK));
+    drawFrame((x, y) => grid[y * BADGE_W + x]);
   };
   step();
-  timer = setInterval(step, interval);
+  timer = setInterval(step, Math.min(interval, TICK));
 }
 
 // テーマは文字やメッセージの状態とは別に保存する（state の検証に含めず、壊れても初期値に戻すだけで済むように）。
