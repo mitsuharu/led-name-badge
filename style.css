@@ -22,9 +22,11 @@
 * { box-sizing: border-box; }
 body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif; }
 header { padding: 20px 16px 4px; max-width: 900px; margin: 0 auto; display:flex; flex-wrap:wrap; gap: 8px 16px; align-items:flex-start; justify-content:space-between; }
+header > div { flex: 1 1 420px; }
 .theme { color: var(--mut); font-size: .85rem; }
 h1 { margin:0; font-size: 1.4rem; }
 .sub { color: var(--mut); margin: 4px 0 0; font-size: .9rem; }
+.sub a { color: var(--link); }
 main { max-width: 900px; margin: 0 auto; padding: 8px 16px 32px; }
 .card { background: var(--card); border:1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
 .card h2 { margin: 0 0 10px; font-size: 1.05rem; }
@@ -60,3 +62,4 @@ blockquote { margin: 0; padding: 2px 0 2px 14px; border-left: 3px solid var(--li
 blockquote ul { margin: 6px 0; padding-left: 1.2em; }
 blockquote footer { font-size: .85rem; text-align: left; padding: 0; }
 .card a { color: var(--link); }
+code { font-size: .9em; padding: 0 4px; border-radius: 4px; background: var(--input); border: 1px solid var(--line); }

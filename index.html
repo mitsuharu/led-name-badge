@@ -18,7 +18,7 @@
 <header>
   <div>
     <h1>LEDネームバッジ 書き換えツール</h1>
-    <p class="sub">11×44ドット USB LEDバッジ（VID 0416 / PID 5020）をブラウザから書き換えます。</p>
+    <p class="sub"><a href="https://www.shigezone.com/p/p916/" target="_blank" rel="noopener">Shigezone で販売している LEDネームバッジ</a>（11×44ドット、USB ID 0416:5020）を、パソコン版の Chrome / Edge から書き換えます。</p>
   </div>
   <label class="theme">テーマ
     <select id="theme">
@@ -31,7 +31,7 @@
 
 <main>
   <section id="support" class="notice" hidden>
-    このブラウザは WebHID に対応していません。パソコン版の <b>Chrome</b> または <b>Edge</b> で開いてください（スマホ・Safari・Firefox は非対応）。
+    このブラウザは WebHID に対応していないため、バッジに書き込めません。パソコン版の <b>Chrome</b> または <b>Edge</b> で開いてください（スマホ・タブレット・Safari・Firefox は非対応）。
   </section>
 
   <section class="card">
@@ -107,6 +107,24 @@
         <button id="remove" class="danger">このメッセージを削除</button>
       </div>
     </div>
+  </section>
+
+  <section class="card small">
+    <h2>対象のLEDバッジ</h2>
+    <ul>
+      <li>商品: <a href="https://www.shigezone.com/p/p916/" target="_blank" rel="noopener">LEDネームバッジ（Shigezone）</a></li>
+      <li>表示: 縦11×横44ドットのLED（漢字は1画面に最大4文字）。USB Type-C で充電・書き換え</li>
+      <li>USB ID <code>0416:5020</code>（"LS32 Custm HID" などと表示される）。同じIDの同型バッジでも動く可能性がありますが、未確認です</li>
+    </ul>
+  </section>
+
+  <section class="card small">
+    <h2>対応ブラウザ</h2>
+    <p>ブラウザからUSB機器を操作する <b>WebHID</b> という機能を使うため、対応しているブラウザでしか動きません。</p>
+    <ul>
+      <li>○ パソコン（Windows / Mac / Linux / Chromebook）の <b>Chrome</b>・<b>Edge</b>（Linux は udev の設定が必要。README参照）</li>
+      <li>× Firefox、Safari、スマートフォン・タブレットのブラウザ（Android の Chrome を含む）</li>
+    </ul>
   </section>
 
   <section class="card small">
