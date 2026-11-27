@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LEDネームバッジ 書き換えツール (WebHID)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>LEDネームバッジ 書き換えツール</h1>
+  <p class="sub">11×44ドット USB LEDバッジ（VID 0416 / PID 5020）をブラウザから書き換えます。</p>
+</header>
+
+<main>
+  <section id="support" class="notice" hidden>
+    このブラウザは WebHID に対応していません。パソコン版の <b>Chrome</b> または <b>Edge</b> で開いてください（スマホ・Safari・Firefox は非対応）。
+  </section>
+
+  <section class="card">
+    <h2>プレビュー</h2>
+    <canvas id="preview" width="440" height="110"></canvas>
+    <div class="row">
+      <label>明るさ
+        <select id="brightness">
+          <option value="100">100%</option>
+          <option value="75">75%</option>
+          <option value="50">50%</option>
+          <option value="25">25%</option>
+        </select>
+      </label>
+      <button id="send" class="primary">バッジに書き込む</button>
+    </div>
+    <p id="status" class="status">USBでバッジを接続し「バッジに書き込む」を押してください。</p>
+  </section>
+
+  <section class="card">
+    <h2>メッセージ（最大8件）</h2>
+    <div id="tabs" class="tabs"></div>
+    <div id="editor">
+      <label class="full">文字列
+        <input id="text" type="text" placeholder="例: こんにちは HELLO">
+      </label>
+      <div class="row">
+        <label>表示モード
+          <select id="mode">
+            <option value="0">← 左へスクロール</option>
+            <option value="1">→ 右へスクロール</option>
+            <option value="2">↑ 上へスクロール</option>
+            <option value="3">↓ 下へスクロール</option>
+            <option value="4">固定表示（中央）</option>
+            <option value="5">アニメーション</option>
+            <option value="6">降ってくる</option>
+            <option value="7">カーテン</option>
+            <option value="8">レーザー</option>
+          </select>
+        </label>
+        <label>速度 <input id="speed" type="range" min="1" max="8" value="4"><span id="speedv">4</span></label>
+        <label class="chk"><input id="blink" type="checkbox"> 点滅</label>
+        <label class="chk"><input id="ants" type="checkbox"> 枠アニメ</label>
+      </div>
+      <details>
+        <summary>フォント設定</summary>
+        <div class="row">
+          <label>フォント
+            <select id="font">
+              <option value='"MS Gothic","Osaka-Mono","Noto Sans JP",monospace'>ゴシック（MS ゴシック等）</option>
+              <option value='"Yu Gothic","Hiragino Sans","Noto Sans JP",sans-serif'>游ゴシック/ヒラギノ</option>
+              <option value='"MS Mincho","Hiragino Mincho ProN","Noto Serif JP",serif'>明朝</option>
+              <option value='"Meiryo","Noto Sans JP",sans-serif'>メイリオ</option>
+              <option value="monospace">等幅（monospace）</option>
+              <option value="sans-serif">sans-serif</option>
+            </select>
+          </label>
+          <label>サイズ <input id="size" type="number" min="6" max="20" value="11"></label>
+          <label>上下位置 <input id="yoff" type="number" min="-6" max="6" value="0"></label>
+          <label>しきい値 <input id="threshold" type="range" min="10" max="240" value="110"></label>
+          <label class="chk"><input id="bold" type="checkbox"> 太字</label>
+          <label>字間 <input id="spacing" type="number" min="-2" max="6" value="0"></label>
+        </div>
+      </details>
+      <h3>ドット編集 <small>（クリック/ドラッグで点を反転。文字列やフォントを変更すると作り直されます）</small></h3>
+      <div class="dotwrap"><canvas id="dots"></canvas></div>
+      <div class="row">
+        <button id="addcols">+8列</button>
+        <button id="delcols">−8列</button>
+        <button id="clear">全消去</button>
+        <button id="invert">反転</button>
+        <button id="regen">文字から再生成</button>
+        <button id="remove" class="danger">このメッセージを削除</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card small">
+    <h2>使い方・注意</h2>
+    <ul>
+      <li>初回は「バッジに書き込む」を押すと機器選択ダイアログが出ます。「LS32 Custm HID」などを選んで「接続」。</li>
+      <li>バッジによっては電源ON＋USB接続中のみ認識されます。認識されないときはケーブル（データ通信対応）や電源を確認してください。</li>
+      <li>Linux では udev ルールが必要です（README参照）。</li>
+      <li>非公式ツールです。動作は保証できません。自己責任でお使いください。</li>
+    </ul>
+  </section>
+</main>
+<footer><a href="https://github.com/mitsuharu/led-name-badge">Source on GitHub</a></footer>
+<script type="module" src="src/app.js"></script>
+</body>
+</html>
