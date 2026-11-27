@@ -282,6 +282,15 @@ function restartPreview() {
   timer = setInterval(step, interval);
 }
 
+// テーマは文字やメッセージの状態とは別に保存する（state の検証に含めず、壊れても初期値に戻すだけで済むように）。
+const THEME_KEY = 'ledbadge.theme';
+const themeSelect = $('theme');
+themeSelect.value = document.documentElement.dataset.theme; // index.html の先頭で dark / light / auto のどれかに決めてある
+themeSelect.addEventListener('input', () => {
+  document.documentElement.dataset.theme = themeSelect.value;
+  try { localStorage.setItem(THEME_KEY, themeSelect.value); } catch {}
+});
+
 function refresh() { renderTabs(); loadForm(); drawDots(); restartPreview(); save(); }
 
 if (!('hid' in navigator)) { $('support').hidden = false; $('send').disabled = true; }
