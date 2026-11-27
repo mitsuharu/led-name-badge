@@ -1,0 +1,10 @@
+{
+  "name": "led-name-badge",
+  "private": true,
+  "type": "module",
+  "description": "11x44 USB LED name badge writer using WebHID",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  }
+}
