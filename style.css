@@ -47,6 +47,7 @@ button:hover { border-color: var(--mut); }
 button.primary { background: var(--acc); border-color: var(--acc); color:#fff; font-weight: bold; padding: 8px 18px; }
 button.danger { color: var(--err); }
 button:disabled { opacity: .5; cursor: default; }
+.note { color: var(--mut); font-size: .85rem; margin: 6px 0 0; }
 .status { color: var(--mut); font-size: .9rem; min-height: 1.3em; }
 .status.ok { color: var(--ok); } .status.err { color: var(--err); }
 .tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom: 10px; }
