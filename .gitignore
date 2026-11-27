@@ -1,0 +1,20 @@
+# OS が作るファイル
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# エディタ・IDE の個人設定
+.vscode/
+.idea/
+*.swp
+*~
+
+# Pages のワークフローが配信用に集めるファイル（ローカルで手順を試したときに残る）
+_site/
+
+# 依存はないが、誤って npm install したときに入らないように
+node_modules/
+npm-debug.log*
+
+# Claude Code の個人設定（共有する設定は .claude/settings.json に置く）
+.claude/settings.local.json
